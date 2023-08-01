@@ -21,10 +21,26 @@ const Logo = () => {
   return <h1> 🏝 Far Away 🧳 </h1>;
 };
 const Form = () => {
+  // tarayıcının tekrar kendini güncellemesini engellerler.
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(e);
+  };
+
   return (
-    <div className="add-form">
+    <form className="add-form" onSubmit={handleSubmit}>
       <h3>What do you need for your 😍 trip? </h3>
-    </div>
+      <select>
+        {/* 1'den 20ye kadar otomatik hesaplama fonksiyonu */}
+        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+          <option value={num} key={num}>
+            {num}
+          </option>
+        ))}
+      </select>
+      <input type="text" placeholder="Item..." />
+      <button>Add</button>
+    </form>
   );
 };
 const PackingList = () => {
@@ -53,6 +69,7 @@ const Item = ({ item }) => {
 const Stats = () => {
   return (
     <footer>
+      );
       <em>You have X items on your list, and you already packed X(X%)</em>
     </footer>
   );
