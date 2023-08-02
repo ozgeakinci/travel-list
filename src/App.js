@@ -26,15 +26,22 @@ const Form = () => {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
-  const newItem = {
-    description,
-    quantity,
-    id: "id" + Math.random().toString(16).slice(2),
-    package: false,
-  };
   // tarayıcının tekrar kendini güncellemesini engellerler.
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const newItem = {
+      description,
+      quantity,
+      id: "id" + Math.random().toString(16).slice(2),
+      package: false,
+    };
+    console.log(newItem);
+
+    // Formun ilk duruma geri dönmesi için
+
+    setDescription("");
+    setQuantity(1);
   };
 
   return (
@@ -67,7 +74,7 @@ const PackingList = () => {
     <div className="list">
       <ul>
         {initialItems.map((item) => (
-          <Item item={item} />
+          <Item item={item} key={item.id} />
         ))}
       </ul>
     </div>
