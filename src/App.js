@@ -7,11 +7,20 @@ const initialItems = [
 ];
 
 function App() {
+  const [items, setItems] = useState([...initialItems]);
+  const handleItems = (item) => {
+    setItems((items) => [...items, item]);
+  };
+
+  const handleDeleteItem = (id) => {
+    setItems((items) => items.filter((item) => item.id !== id));
+  };
+
   return (
     <div className="app">
       <Logo />
-      <Form />
-      <PackingList />
+      <Form setItems={setItems} onAddItems={handleItems} />
+      <PackingList items={items} onDeleteItem={handleDeleteItem} />
       <Stats />
     </div>
   );
@@ -22,13 +31,15 @@ export default App;
 const Logo = () => {
   return <h1> 🏝 Far Away 🧳 </h1>;
 };
-const Form = () => {
+const Form = ({ setItems, onAddItems }) => {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
   // tarayıcının tekrar kendini güncellemesini engellerler.
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!description) return;
 
     const newItem = {
       description,
@@ -37,6 +48,8 @@ const Form = () => {
       package: false,
     };
     console.log(newItem);
+
+    onAddItems(newItem);
 
     // Formun ilk duruma geri dönmesi için
 
@@ -69,26 +82,25 @@ const Form = () => {
     </form>
   );
 };
-const PackingList = () => {
+const PackingList = ({ items, onDeleteItem }) => {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((item) => (
-          <Item item={item} key={item.id} />
+        {items.map((item) => (
+          <Item item={item} key={item.id} onDeleteItem={onDeleteItem} />
         ))}
       </ul>
     </div>
   );
 };
 
-const Item = ({ item, newItem }) => {
+const Item = ({ item, onDeleteItem }) => {
   return (
     <li>
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
-        {newItem}
       </span>
-      <button>❌</button>
+      <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
   );
 };
