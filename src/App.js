@@ -7,7 +7,7 @@ const initialItems = [
 ];
 
 function App() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([...initialItems]);
   const handleItems = (item) => {
     setItems((items) => [...items, item]);
   };
@@ -38,7 +38,7 @@ function App() {
         onDeleteItem={handleDeleteItem}
         onHandleToggleItem={handleToggleItem}
       />
-      <Stats />
+      <Stats items={items} />
     </div>
   );
 }
@@ -100,10 +100,22 @@ const Form = ({ setItems, onAddItems }) => {
   );
 };
 const PackingList = ({ items, onDeleteItem, onHandleToggleItem }) => {
+  const [sortBy, setSortBy] = useState("input");
+
+  let sortedItems;
+  if (sortBy === "input") sortedItems = items;
+  if (sortBy === "description")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+  if (sortBy === "packed")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
   return (
     <div className="list">
       <ul>
-        {items.map((item) => (
+        {sortedItems.map((item) => (
           <Item
             item={item}
             key={item.id}
@@ -112,6 +124,14 @@ const PackingList = ({ items, onDeleteItem, onHandleToggleItem }) => {
           />
         ))}
       </ul>
+
+      <div className="actions">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input">Sort by input order</option>
+          <option value="description">Sort by input description</option>
+          <option value="packed">Sort by packed status</option>
+        </select>
+      </div>
     </div>
   );
 };
@@ -133,11 +153,30 @@ const Item = ({ item, onDeleteItem, onHandleToggleItem }) => {
   );
 };
 
-const Stats = () => {
+const Stats = ({ items }) => {
+  // Eğer hiç eleman yoksa early retun için
+
+  if (!items.length)
+    return (
+      <p className="stats">
+        <em>Start adding some items to your packing list 🚀</em>
+      </p>
+    );
+
+  // kaç tane toplam ürün eklediğini hesaplar.
+  const numItems = items.length;
+  // pacerkenmiş ürün
+  const numPacked = items.filter((item) => item.packed).length;
+  // Yüzde olarak hazırlanan paket
+  const percentage = Math.round((numPacked / numItems) * 100);
   return (
-    <footer>
-      );
-      <em>You have X items on your list, and you already packed X(X%)</em>
+    <footer className="stats">
+      <em>
+        {percentage === 100
+          ? "You got everthing! Ready to go ✈️"
+          : `You have ${numItems} items on your list, and you already packed
+        ${numPacked} ${percentage}%`}
+      </em>
     </footer>
   );
 };
